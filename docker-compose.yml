@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  # ---- PostgreSQL Database Service ----
+  db:
+    image: postgres:15
+    container_name: dev_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: devmoons
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # ---- FastAPI Backend Service ----
+  backend:
+    build: ./backend
+    container_name: dev_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/devmoons
+    depends_on:
+      - db
+
+  # ---- React Frontend Service ----
+  frontend:
+    build: ./frontend
+    container_name: dev_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

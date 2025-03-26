@@ -16,13 +16,11 @@ router = APIRouter()
 
 @router.post("/", response_model=CryptoOut)
 def create_crypto(crypto_in: CryptoCreate, db: Session = Depends(get_db)):
-    logging.debug('test')
     existing_obj = crud_crypto.get_by_symbol(db, crypto_in.symbol)
     if existing_obj:
         raise HTTPException(status_code=400, detail="Symbol already exists")
 
     data = fetch_from_coingecko(crypto_in.symbol)
-    print('data', data)
 
     if not data:
         raise HTTPException(status_code=404, detail="Symbol not found on Coingecko")
@@ -30,8 +28,6 @@ def create_crypto(crypto_in: CryptoCreate, db: Session = Depends(get_db)):
     crypto_in.name = data["name"]
     crypto_in.current_price = data["current_price"]
     crypto_in.image_url = data["image_url"] if data.get("image_url", None) else None
-
-    print('crypto_in', crypto_in)
 
     db_obj = Cryptocurrency(
         symbol=crypto_in.symbol,
@@ -53,8 +49,6 @@ def list_cryptos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
 @router.get("/{symbol}", response_model=CryptoOut)
 def get_crypto(symbol: str, db: Session = Depends(get_db)):
     data = fetch_from_coingecko(symbol)
-    print('GECKO')
-    print('data', data)
     db_obj = crud_crypto.get_by_symbol(db, symbol)
     if not db_obj:
         raise HTTPException(status_code=404, detail="Not found")

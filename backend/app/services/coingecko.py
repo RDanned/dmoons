@@ -5,7 +5,6 @@ logger = logging.getLogger(__name__)
 
 
 def fetch_from_coingecko(symbol: str):
-    logging.debug('fetch_from_coingecko')
     base_url = "https://api.coingecko.com/api/v3"
     all_coins = requests.get(f"{base_url}/coins/list").json()
 
@@ -27,7 +26,6 @@ def fetch_from_coingecko(symbol: str):
         return None
 
     coin_data = markets[0]
-    print('coin_data', coin_data)
     return {
         "symbol": coin_data["symbol"],
         "name": coin_data["name"],
